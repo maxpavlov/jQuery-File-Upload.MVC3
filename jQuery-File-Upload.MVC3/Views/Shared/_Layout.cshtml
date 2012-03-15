@@ -1,0 +1,40 @@
+﻿@using ClientDependency.Core
+@using ClientDependency.Core.Mvc
+<!DOCTYPE html>
+<html>
+<head>
+	<title>@ViewBag.Title</title>
+	
+	@MvcHtmlString.Create(Html.RenderCssHere(new List<IClientDependencyPath>
+												{
+													new BasicPath("Base", "~/Content/themes/base"),
+													new BasicPath("Content", "~/Content")
+												}))
+
+	@MvcHtmlString.Create(Html.RenderJsHere(new List<IClientDependencyPath>
+											   {
+												   new BasicPath("Scripts", "~/Scripts"),
+												   new BasicPath("googleCDN", "http://ajax.googleapis.com/ajax/libs/"),
+												   new BasicPath("Content", "~/Content")
+												   
+											   }))
+
+	@{
+		Html.RequiresCss("Site.css", "Content", 1);
+	}
+</head>
+<body>
+	<div class="page">
+		<div id="header">
+			<div id="title">
+				<h1>jQuery-File-Upload MVC3 Demo</h1>
+			</div>
+		</div>
+		<div id="main">
+			@RenderBody()
+		</div>
+		<div id="footer">
+		</div>
+	</div>
+</body>
+</html>
