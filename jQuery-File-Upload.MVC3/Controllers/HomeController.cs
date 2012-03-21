@@ -9,6 +9,11 @@ namespace jQuery_File_Upload.MVC3.Controllers
 {
     public class HomeController : Controller
     {
+        private string StorageRoot
+        {
+            get { return Path.Combine(Server.MapPath("~/Files")); }
+        }
+
         public ActionResult Index()
         {
             return View();
@@ -52,26 +57,22 @@ namespace jQuery_File_Upload.MVC3.Controllers
 
             foreach (string file in Request.Files)
             {
-                var hpf = Request.Files[file] as HttpPostedFileBase;
-                if (hpf.ContentLength == 0 || hpf.FileName == null)
-                    continue;
+                var statuses = new List<ViewDataUploadFilesResult>();
+                var headers = Request.Headers;
 
-                var filename = Guid.NewGuid() + Path.GetFileName(hpf.FileName);
-
-                var filepath = Path.Combine(Server.MapPath("~/Files"), filename);
-                hpf.SaveAs(filepath);
-
-                r.Add(new ViewDataUploadFilesResult()
+                if (string.IsNullOrEmpty(headers["X-File-Name"]))
                 {
-                    name = hpf.FileName,
-                    size = hpf.ContentLength,
-                    type = hpf.ContentType,
-                    url = "/Home/Download/" + filename,
-                    delete_url = "/Home/Delete/" + filename,
-                    delete_type = "GET",
-                    thumbnail_url = @"data:image/png;base64," + EncodeFile(filepath)
+                    UploadWholeFile(Request, statuses);
+                }
+                else
+                {
+                    UploadPartialFile(headers["X-File-Name"], Request, statuses);
+                }
 
-                });
+                JsonResult result = Json(statuses);
+                result.ContentType = "text/plain";
+
+                return result;
             }
 
             return Json(r);
@@ -80,6 +81,59 @@ namespace jQuery_File_Upload.MVC3.Controllers
         private string EncodeFile(string fileName)
         {
             return Convert.ToBase64String(System.IO.File.ReadAllBytes(fileName));
+        }
+
+        //Credit to i-e-b and his ASP.Net uploader for the bulk of the upload helper methods - https://github.com/i-e-b/jQueryFileUpload.Net
+        private void UploadPartialFile(string fileName, HttpRequestBase request, List<ViewDataUploadFilesResult> statuses)
+        {
+            if (request.Files.Count != 1) throw new HttpRequestValidationException("Attempt to upload chunked file containing more than one fragment per request");
+            var file = request.Files[0];
+            var inputStream = file.InputStream;
+            var fullName = Path.Combine(StorageRoot, Path.GetFileName(fileName));
+
+            using (var fs = new FileStream(fullName, FileMode.Append, FileAccess.Write))
+            {
+                var buffer = new byte[1024];
+
+                var l = inputStream.Read(buffer, 0, 1024);
+                while (l > 0)
+                {
+                    fs.Write(buffer, 0, l);
+                    l = inputStream.Read(buffer, 0, 1024);
+                }
+                fs.Flush();
+                fs.Close();
+            }
+            statuses.Add(new ViewDataUploadFilesResult()
+            {
+                name = fileName,
+                size = file.ContentLength,
+                type = file.ContentType,
+                url = "/Home/Download/" + fileName,
+                delete_url = "/Home/Delete/" + fileName,
+                delete_type = "GET",
+            });
+        }
+
+        //Credit to i-e-b and his ASP.Net uploader for the bulk of the upload helper methods - https://github.com/i-e-b/jQueryFileUpload.Net
+        private void UploadWholeFile(HttpRequestBase request, List<ViewDataUploadFilesResult> statuses)
+        {
+            for (int i = 0; i < request.Files.Count; i++)
+            {
+                var file = request.Files[i];
+                file.SaveAs(Path.Combine(StorageRoot, Path.GetFileName(file.FileName)));
+
+                string fullName = Path.GetFileName(file.FileName);
+                statuses.Add(new ViewDataUploadFilesResult()
+                {
+                    name = file.FileName,
+                    size = file.ContentLength,
+                    type = file.ContentType,
+                    url = "/Home/Download/" + file.FileName,
+                    delete_url = "/Home/Delete/" + file.FileName,
+                    delete_type = "GET",
+                });
+            }
         }
     }
 
