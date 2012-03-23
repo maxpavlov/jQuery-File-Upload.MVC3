@@ -34,9 +34,16 @@ namespace jQuery_File_Upload.MVC3.Upload
             delete_url = HandlerPath + "FileTransferHandler.ashx?f=" + fileName;
             delete_type = "DELETE";
 
+            var ext = Path.GetExtension(fullPath);
+            
             var fileSize = ConvertBytesToMegabytes(new FileInfo(fullPath).Length);
-            if (size > 3) thumbnail_url = "/Content/img/generalFile.png";
+            if (fileSize > 3 || !IsImage(ext)) thumbnail_url = "/Content/img/generalFile.png";
             else thumbnail_url = @"data:image/png;base64," + EncodeFile(fullPath);
+        }
+
+        private bool IsImage(string ext)
+        {
+            return ext == ".gif" || ext == ".jpg" || ext == ".png";
         }
 
         private string EncodeFile(string fileName)
