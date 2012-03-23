@@ -302,3 +302,9 @@ div#title {
 .tri-state {
     width: 6em;
 }
+
+.preview img 
+{
+    max-width: 80px;
+    max-height: 80px;
+}

@@ -19,6 +19,7 @@ namespace jQuery_File_Upload.MVC3.Controllers
             return View();
         }
 
+        //DONT USE THIS IF YOU NEED TO ALLOW LARGE FILES UPLOADS
         [HttpGet]
         public void Delete(string id)
         {
@@ -31,6 +32,7 @@ namespace jQuery_File_Upload.MVC3.Controllers
             }
         }
 
+        //DONT USE THIS IF YOU NEED TO ALLOW LARGE FILES UPLOADS
         [HttpGet]
         public void Download(string id)
         {
@@ -50,6 +52,7 @@ namespace jQuery_File_Upload.MVC3.Controllers
                 context.Response.StatusCode = 404;
         }
 
+        //DONT USE THIS IF YOU NEED TO ALLOW LARGE FILES UPLOADS
         [HttpPost]
         public ActionResult UploadFiles()
         {
@@ -83,12 +86,14 @@ namespace jQuery_File_Upload.MVC3.Controllers
             return Convert.ToBase64String(System.IO.File.ReadAllBytes(fileName));
         }
 
+        //DONT USE THIS IF YOU NEED TO ALLOW LARGE FILES UPLOADS
         //Credit to i-e-b and his ASP.Net uploader for the bulk of the upload helper methods - https://github.com/i-e-b/jQueryFileUpload.Net
         private void UploadPartialFile(string fileName, HttpRequestBase request, List<ViewDataUploadFilesResult> statuses)
         {
             if (request.Files.Count != 1) throw new HttpRequestValidationException("Attempt to upload chunked file containing more than one fragment per request");
             var file = request.Files[0];
             var inputStream = file.InputStream;
+
             var fullName = Path.Combine(StorageRoot, Path.GetFileName(fileName));
 
             using (var fs = new FileStream(fullName, FileMode.Append, FileAccess.Write))
@@ -111,19 +116,23 @@ namespace jQuery_File_Upload.MVC3.Controllers
                 type = file.ContentType,
                 url = "/Home/Download/" + fileName,
                 delete_url = "/Home/Delete/" + fileName,
+                thumbnail_url = @"data:image/png;base64," + EncodeFile(fullName),
                 delete_type = "GET",
             });
         }
 
+        //DONT USE THIS IF YOU NEED TO ALLOW LARGE FILES UPLOADS
         //Credit to i-e-b and his ASP.Net uploader for the bulk of the upload helper methods - https://github.com/i-e-b/jQueryFileUpload.Net
         private void UploadWholeFile(HttpRequestBase request, List<ViewDataUploadFilesResult> statuses)
         {
             for (int i = 0; i < request.Files.Count; i++)
             {
                 var file = request.Files[i];
-                file.SaveAs(Path.Combine(StorageRoot, Path.GetFileName(file.FileName)));
 
-                string fullName = Path.GetFileName(file.FileName);
+                var fullPath = Path.Combine(StorageRoot, Path.GetFileName(file.FileName));
+
+                file.SaveAs(fullPath);
+
                 statuses.Add(new ViewDataUploadFilesResult()
                 {
                     name = file.FileName,
@@ -131,6 +140,7 @@ namespace jQuery_File_Upload.MVC3.Controllers
                     type = file.ContentType,
                     url = "/Home/Download/" + file.FileName,
                     delete_url = "/Home/Delete/" + file.FileName,
+                    thumbnail_url = @"data:image/png;base64," + EncodeFile(fullPath),
                     delete_type = "GET",
                 });
             }

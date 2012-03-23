@@ -19,8 +19,7 @@ $(function () {
     $('#fileupload').fileupload();
 
     $('#fileupload').fileupload('option', {
-            maxFileSize: 5000000,
-            acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i,
+            maxFileSize: 500000000,
             resizeMaxWidth: 1920,
             resizeMaxHeight: 1200
         });

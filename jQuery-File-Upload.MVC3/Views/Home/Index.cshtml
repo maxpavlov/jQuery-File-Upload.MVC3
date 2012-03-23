@@ -32,7 +32,18 @@
 <!-- Shim to make HTML5 elements usable in older Internet Explorer versions -->
 <!--[if lt IE 9]><script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
 
-<form id="fileupload" action="@Url.Action("UploadFiles")" method="POST" enctype="multipart/form-data">
+
+@*IN ORDER TO USE MVC ACTIONS AS HANDLERS OF AJAX CALLS, USE THE FORM DECLARATION BELOW. (THE ONE COMMENTED OUT)
+IT IS NOT ADVISED SINCE WHEN USING MVC CONTROLLER TO HANDLE REQUESTS ONE CAN'T CONTROL THE maxMessageLength OF THE POST REQUEST
+THIS CASTS THE FUNCTIONALITY OF UPLOADING LARGE FILES USELESS, UNLESS YOU SUCRIFICE THE SECURITY AND ALLOW LARGE 
+POST MESSAGE SIZES SITE-WIDE.
+
+IT IS BETTER TO USE HTTP HANDLER TO PROCESS UPLOAD REQUESTS UNTIL MVC FRAMEWORK PROVIDES WAYS TO SET maxMessageLength ON
+PER ACTION BASIS *@
+
+@*<form id="fileupload" action="@Url.Action("UploadFiles")" method="POST" enctype="multipart/form-data">*@
+
+<form id="fileupload" action="/Upload/UploadHandler.ashx" method="POST" enctype="multipart/form-data">
         <!-- The fileupload-buttonbar contains buttons to add/delete files and start/cancel the upload -->
         <div class="row fileupload-buttonbar">
             <div class="span7">
