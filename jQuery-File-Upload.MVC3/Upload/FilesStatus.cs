@@ -30,8 +30,8 @@ namespace jQuery_File_Upload.MVC3.Upload
             type = "image/png";
             size = fileLength;
             progress = "1.0";
-            url = HandlerPath + "FileTransferHandler.ashx?f=" + fileName;
-            delete_url = HandlerPath + "FileTransferHandler.ashx?f=" + fileName;
+            url = HandlerPath + "UploadHandler.ashx?f=" + fileName;
+            delete_url = HandlerPath + "UploadHandler.ashx?f=" + fileName;
             delete_type = "DELETE";
 
             var ext = Path.GetExtension(fullPath);
