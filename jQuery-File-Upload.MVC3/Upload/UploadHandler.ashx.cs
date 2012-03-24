@@ -15,7 +15,7 @@ namespace jQuery_File_Upload.MVC3.Upload
 
         private string StorageRoot
         {
-            get { return Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/Files")); }
+            get { return Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/Files/")); } //Path should! always end with '/'
         }
 
         public bool IsReusable { get { return false; } }
@@ -98,7 +98,7 @@ namespace jQuery_File_Upload.MVC3.Upload
         {
             if (context.Request.Files.Count != 1) throw new HttpRequestValidationException("Attempt to upload chunked file containing more than one fragment per request");
             var inputStream = context.Request.Files[0].InputStream;
-            var fullName = StorageRoot + "/" + Path.GetFileName(fileName);
+            var fullName = StorageRoot + Path.GetFileName(fileName);
 
             using (var fs = new FileStream(fullName, FileMode.Append, FileAccess.Write))
             {
@@ -123,7 +123,7 @@ namespace jQuery_File_Upload.MVC3.Upload
             {
                 var file = context.Request.Files[i];
 
-                var fullPath = StorageRoot + "/" + Path.GetFileName(file.FileName);
+                var fullPath = StorageRoot + Path.GetFileName(file.FileName);
 
                 file.SaveAs(fullPath);
 
