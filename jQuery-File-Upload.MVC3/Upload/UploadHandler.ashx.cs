@@ -11,11 +11,17 @@ namespace jQuery_File_Upload.MVC3.Upload
     /// </summary>
     public class UploadHandler : IHttpHandler
     {
-        private readonly JavaScriptSerializer js = new JavaScriptSerializer();
+        private readonly JavaScriptSerializer js;
 
         private string StorageRoot
         {
             get { return Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/Files/")); } //Path should! always end with '/'
+        }
+
+        public UploadHandler()
+        {
+            js = new JavaScriptSerializer();
+            js.MaxJsonLength = 41943040;
         }
 
         public bool IsReusable { get { return false; } }
