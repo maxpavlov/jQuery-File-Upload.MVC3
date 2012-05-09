@@ -5,7 +5,7 @@ namespace jQuery_File_Upload.MVC3.Upload
 {
     public class FilesStatus
     {
-        public const string HandlerPath = "/";
+        public const string HandlerPath = "/Upload/";
 
         public string group { get; set; }
         public string name { get; set; }
