@@ -1,10 +1,16 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 
 namespace jQuery_File_Upload.MVC3.Upload
 {
     public class FilesStatus
     {
+        private static readonly string[] ImageExtensions = new[]
+            {
+                ".gif", ".jpg", ".png"
+            };
+
         public const string HandlerPath = "/Upload/";
 
         public string group { get; set; }
@@ -43,7 +49,9 @@ namespace jQuery_File_Upload.MVC3.Upload
 
         private bool IsImage(string ext)
         {
-            return ext == ".gif" || ext == ".jpg" || ext == ".png";
+            string lowercaseExtension = ext.ToLowerInvariant();
+
+            return ImageExtensions.Contains(lowercaseExtension);
         }
 
         private string EncodeFile(string fileName)
