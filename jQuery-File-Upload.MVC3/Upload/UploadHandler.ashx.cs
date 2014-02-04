@@ -108,16 +108,7 @@ namespace jQuery_File_Upload.MVC3.Upload
 
             using (var fs = new FileStream(fullName, FileMode.Append, FileAccess.Write))
             {
-                var buffer = new byte[1024];
-
-                var l = inputStream.Read(buffer, 0, 1024);
-                while (l > 0)
-                {
-                    fs.Write(buffer, 0, l);
-                    l = inputStream.Read(buffer, 0, 1024);
-                }
-                fs.Flush();
-                fs.Close();
+                inputStream.CopyTo(fs);
             }
             statuses.Add(new FilesStatus(new FileInfo(fullName)));
         }
