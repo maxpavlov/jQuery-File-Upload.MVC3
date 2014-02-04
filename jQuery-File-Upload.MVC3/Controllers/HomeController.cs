@@ -97,7 +97,7 @@ namespace jQuery_File_Upload.MVC3.Controllers
 
             using (var fs = new FileStream(fullName, FileMode.Append, FileAccess.Write))
             {
-                file.InputStream.CopyTo(files);
+                file.InputStream.CopyTo(fs);
             }
             
             statuses.Add(new ViewDataUploadFilesResult()
