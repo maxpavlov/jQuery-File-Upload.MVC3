@@ -91,24 +91,15 @@ namespace jQuery_File_Upload.MVC3.Controllers
         private void UploadPartialFile(string fileName, HttpRequestBase request, List<ViewDataUploadFilesResult> statuses)
         {
             if (request.Files.Count != 1) throw new HttpRequestValidationException("Attempt to upload chunked file containing more than one fragment per request");
-            var file = request.Files[0];
-            var inputStream = file.InputStream;
 
+            var file = request.Files[0];
             var fullName = Path.Combine(StorageRoot, Path.GetFileName(fileName));
 
             using (var fs = new FileStream(fullName, FileMode.Append, FileAccess.Write))
             {
-                var buffer = new byte[1024];
-
-                var l = inputStream.Read(buffer, 0, 1024);
-                while (l > 0)
-                {
-                    fs.Write(buffer, 0, l);
-                    l = inputStream.Read(buffer, 0, 1024);
-                }
-                fs.Flush();
-                fs.Close();
+                file.InputStream.CopyTo(fs);
             }
+            
             statuses.Add(new ViewDataUploadFilesResult()
             {
                 name = fileName,
